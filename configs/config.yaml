@@ -1,0 +1,31 @@
+# Configuration par défaut — un fichier de ce type par run d'ablation
+# (dupliquer et modifier `run_name`, `model.architecture`, `loss.type`)
+
+run_name: "unet_dice"          # convention : <architecture>_<loss>
+
+data:
+  images_dir: "data/raw/images"
+  masks_dir: "data/raw/masks"
+  image_size: 256               # redimensionnement (H=W=image_size)
+  val_split: 0.15
+  test_split: 0.15
+  seed: 42
+
+model:
+  architecture: "unet"          # "unet" ou "deeplabv3"
+  encoder: "resnet34"           # backbone (utilisé pour DeepLabV3 via smp)
+  num_classes: 2                # lésion vs fond (binaire)
+
+loss:
+  type: "dice"                  # "dice" | "cross_entropy" | "combo"
+  combo_weights: [0.5, 0.5]     # utilisé seulement si type == "combo"
+
+training:
+  epochs: 50
+  batch_size: 16
+  learning_rate: 0.0001
+  optimizer: "adam"
+  early_stopping_patience: 8
+
+output:
+  experiment_dir: "experiments"

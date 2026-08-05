@@ -1,0 +1,28 @@
+# Données (ne jamais versionner le dataset)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Expériences : poids et logs volumineux non versionnés,
+# seul le résumé results_summary.csv est gardé
+experiments/*
+!experiments/results_summary.csv
+!experiments/.gitkeep
+
+# Environnement Python
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Kaggle credentials — ne JAMAIS committer
+kaggle.json
+
+# Fichiers système
+.DS_Store
+
+# Sorties de build
+*.egg-info/
+build/
+dist/

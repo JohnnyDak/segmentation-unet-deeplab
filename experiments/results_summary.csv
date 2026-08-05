@@ -1,0 +1,1 @@
+run_name,architecture,loss,iou_lesion,iou_background,mean_iou,dice_lesion,dice_background,mean_dice

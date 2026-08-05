@@ -1,0 +1,13 @@
+# PyTorch : préinstallé sur Colab/Kaggle, décommenter si installation locale
+# torch>=2.1
+# torchvision>=0.16
+
+segmentation-models-pytorch>=0.3.3
+albumentations>=1.4
+opencv-python-headless>=4.9
+scikit-learn>=1.4
+pandas>=2.2
+matplotlib>=3.8
+numpy>=1.26
+tqdm>=4.66
+pyyaml>=6.0
