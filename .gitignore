@@ -3,6 +3,8 @@ data/raw/*
 data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+!data/processed/splits/
+!data/processed/splits/*.txt
 
 # Expériences : poids et logs volumineux non versionnés,
 # seul le résumé results_summary.csv est gardé
