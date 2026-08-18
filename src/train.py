@@ -185,7 +185,11 @@ def main(config_path: str) -> None:
         mlflow.log_metric("best_val_mean_dice", best_val_dice)
 
         # --- Model logging + Model Registry ---
-        model_info = mlflow.pytorch.log_model(model, artifact_path="model")
+        # `input_example` est nécessaire pour le format de sérialisation
+        # récent de MLflow (trace le graphe via une exécution réelle du
+        # modèle), et sert aussi à documenter la signature attendue.
+        input_example = next(iter(val_loader))[0][:1].cpu().numpy()
+        model_info = mlflow.pytorch.log_model(model, name="model", input_example=input_example)
         registered = mlflow.register_model(model_info.model_uri, model_name)
 
         # Attache la métrique en tag pour permettre les comparaisons futures
