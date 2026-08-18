@@ -7,6 +7,7 @@ Point clé : albumentations applique la MEME transformation géométrique
 `transform(image=..., mask=...)`. C'est indispensable en segmentation :
 si l'image tourne mais pas le masque, les deux ne correspondent plus.
 """
+import glob
 import os
 
 import albumentations as A
@@ -16,8 +17,12 @@ import torch
 from albumentations.pytorch import ToTensorV2
 from torch.utils.data import Dataset
 
-# Statistiques ImageNet : utilisées car les encodeurs (ResNet, etc.)
-# sont pré-entraînés sur ImageNet et attendent des images normalisées ainsi.
+# Statistiques de normalisation ImageNet, réutilisées ici comme simple
+# choix de normalisation numériquement stable (moyenne/écart-type
+# raisonnables pour des images naturelles) — mais comme l'entraînement est
+# from scratch (pas de poids pré-entraînés), ce n'est pas une obligation :
+# une normalisation par les stats du dataset ISIC lui-même serait tout
+# aussi valable.
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
 
@@ -96,7 +101,14 @@ class ISICDataset(Dataset):
         stem = self.stems[idx]
 
         image_path = os.path.join(self.images_dir, f"{stem}.jpg")
-        mask_path = os.path.join(self.masks_dir, f"{stem}_Segmentation.png")
+
+        # Le suffixe des masques varie selon l'édition ISIC
+        # (ex. "_Segmentation.png" en 2016, "_segmentation.png" en 2017).
+        # On recherche donc par préfixe plutôt que par suffixe exact.
+        mask_candidates = glob.glob(os.path.join(self.masks_dir, f"{stem}*.png"))
+        if not mask_candidates:
+            raise FileNotFoundError(f"Aucun masque trouvé pour {stem} dans {self.masks_dir}")
+        mask_path = mask_candidates[0]
 
         image = cv2.cvtColor(cv2.imread(image_path), cv2.COLOR_BGR2RGB)
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
