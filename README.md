@@ -67,6 +67,14 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## Avancement du projet
+
+- [`ROADMAP.md`](ROADMAP.md) — découpage du travail en étapes, une branche
+  par étape, avec une définition claire de "fini" pour chacune.
+- [`CHALLENGES.md`](CHALLENGES.md) — journal des difficultés rencontrées,
+  mis à jour au fil du projet (matière première pour la section
+  "Discussion et limites" du rapport).
+
 ## Suivi des expériences (étude d'ablation)
 
 Chaque run est nommé selon le schéma `<architecture>_<loss>`, par exemple :
