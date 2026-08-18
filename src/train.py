@@ -116,10 +116,10 @@ def maybe_promote_to_production(client: MlflowClient, model_name: str, version: 
         print(f"✅ {model_name} v{version} promu en Production (mean_dice={metric_value:.4f}).")
 
 
-def main(config_path: str) -> None:
-    with open(config_path) as f:
-        cfg = yaml.safe_load(f)
-
+def train_from_config(cfg: dict) -> dict:
+    """Exécute un run d'entraînement complet à partir d'un dict de config
+    déjà chargé (permet d'être appelé en boucle depuis run_ablation.py,
+    sans repasser par un fichier .yaml à chaque run)."""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Device : {device}")
 
@@ -203,6 +203,20 @@ def main(config_path: str) -> None:
 
     print(f"\nTerminé. Meilleur val_mean_dice : {best_val_dice:.4f}")
     print(f"Modèle enregistré : {model_name} (version {registered.version})")
+
+    return {
+        "run_name": run_name,
+        "architecture": cfg["model"]["architecture"],
+        "loss": cfg["loss"]["type"],
+        "best_val_mean_dice": best_val_dice,
+        "model_version": registered.version,
+    }
+
+
+def main(config_path: str) -> None:
+    with open(config_path) as f:
+        cfg = yaml.safe_load(f)
+    train_from_config(cfg)
 
 
 if __name__ == "__main__":
