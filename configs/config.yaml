@@ -4,17 +4,20 @@
 run_name: "unet_dice"          # convention : <architecture>_<loss>
 
 data:
-  images_dir: "data/raw/images"
-  masks_dir: "data/raw/masks"
-  image_size: 256               # redimensionnement (H=W=image_size)
+  # Pointe vers les images pré-traitées (voir src/data/preprocess.py) :
+  # déjà redimensionnées à image_size, beaucoup plus rapides à charger
+  # que les originaux ISIC (jusqu'à 17 Mo/image, résolution non standardisée).
+  images_dir: "data/processed/images"
+  masks_dir: "data/processed/masks"
+  image_size: 256               # doit correspondre à la taille utilisée par preprocess.py
   val_split: 0.15
   test_split: 0.15
   seed: 42
 
 model:
   architecture: "unet"          # "unet" ou "deeplabv3"
-  encoder: "resnet34"           # backbone (utilisé pour DeepLabV3 via smp)
   num_classes: 2                # lésion vs fond (binaire)
+  base_filters: 32               # utilisé par UNet (voir src/models/unet.py)
 
 loss:
   type: "dice"                  # "dice" | "cross_entropy" | "combo"
