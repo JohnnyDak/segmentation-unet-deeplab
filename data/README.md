@@ -29,6 +29,25 @@ mv data/raw/masks_tmp/*/*.png data/raw/masks/ 2>/dev/null || mv data/raw/masks_t
 rm -rf data/raw/images_tmp data/raw/masks_tmp *.zip
 ```
 
+> **Pas de `wget` en local (ex. Git Bash sur Windows) ?** Remplace les deux
+> lignes `wget -q <url>` par `curl -sS -o <nom_du_fichier.zip> <url>` (même
+> ordre d'arguments inversé : `-o` avant l'URL). Le reste du script ne change pas.
+
+### Vérifier que tout est en place
+
+Une fois le dataset téléchargé et `python -m src.data.make_splits` exécuté
+(génère les splits, déjà versionnés dans `data/processed/splits/` — inutile
+de le relancer sauf si tu ajoutes des données), vérifie que le pipeline
+fonctionne de bout en bout :
+
+```bash
+python -m src.data.verify --config configs/config.yaml
+```
+
+Ça confirme : nombre d'images/masques cohérent, et chaque split (train/val/test)
+se charge correctement via `ISICDataset` (bonnes dimensions, masque binaire
+{0, 1}).
+
 ### Test set (optionnel, pour une évaluation finale hors validation)
 
 ```bash
