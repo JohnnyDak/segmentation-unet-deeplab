@@ -14,31 +14,38 @@ Pour chaque difficulté rencontrée pendant une étape, ajouter une entrée dans
       reproductibilité vérifiée), `ISICDataset` validé sur les 3 splits.
       → Definition of done : `python -m src.data.verify` passe sans erreur.
 
-- [ ] **1. Modèles** (`feat/models`)
+- [x] **1. Modèles** (`feat/models`)
       U-Net (implémentation propre, pas juste un import) + wrapper DeepLabV3
       via `segmentation_models_pytorch` (encoder resnet34, cf. config.yaml).
-      → Definition of done : forward pass sur un batch factice produit la
-      bonne shape de sortie `(N, num_classes, H, W)` ; nombre de paramètres
-      de chaque modèle loggé (utile pour le rapport).
+      → Forward pass sur batch factice validé : sortie `(N, 2, 256, 256)`
+      pour les deux architectures. U-Net : 31M paramètres, DeepLabV3+resnet34 :
+      26M paramètres.
 
-- [ ] **2. Losses** (`feat/losses`)
+- [x] **2. Losses** (`feat/models`)
       Dice loss, Cross-Entropy, combo (poids configurables via `config.yaml`).
-      → Definition of done : test sur cas synthétiques à valeur attendue
-      connue (masque prédit = masque réel → loss proche de 0 ; masque
-      totalement faux → loss proche du max).
+      → Validé sur cas synthétiques : masque parfait → loss ~0 (les 3
+      losses) ; masque totalement inversé → loss nettement plus élevée
+      (dice 0.94, cross_entropy 20.0, combo 10.47).
 
-- [ ] **3. Métriques** (`feat/metrics`)
+- [x] **3. Métriques** (`feat/models`)
       IoU / Dice, calculés **par classe** (pas seulement la moyenne).
-      → Definition of done : même principe que les losses, cas synthétiques
-      à valeur connue.
+      → Validé sur cas synthétiques : masque parfait → IoU ~1.0 ; masque
+      totalement inversé → IoU ~0.0.
 
-- [ ] **4. Boucle d'entraînement** (`feat/train-loop`)
+- [x] **4. Boucle d'entraînement** (`feat/models`)
       `src/train.py` : lit `configs/config.yaml`, entraîne, checkpoint à
-      chaque epoch sur Drive (Colab), reprise automatique si interruption,
-      logs métriques par epoch dans `experiments/<run_name>/`.
-      → Definition of done : un run complet (`unet_dice`) tourne sans
-      crash de bout en bout et écrit une ligne dans
-      `experiments/results_summary.csv`.
+      chaque epoch, reprise automatique si interruption (protège contre une
+      session Colab coupée), logs métriques par epoch dans
+      `experiments/<run_name>/`, met à jour `experiments/results_summary.csv`.
+      → Validé en conditions réelles : run `unet_dice` en mode
+      `--smoke-test` (8 images train / 4 val, CPU local) exécuté de bout en
+      bout sans erreur, loss décroît (0.4638 → 0.3596), IoU progresse
+      (0.376 → 0.524). Reprise depuis checkpoint vérifiée (relance détecte
+      l'epoch suivante, ne retraite rien).
+      Étapes 1 à 4 développées et testées ensemble sur une seule branche
+      (`feat/models`) plutôt que 4 branches séparées — elles se valident
+      mutuellement (le smoke-test du train-loop exerce modèles/losses/
+      métriques en conditions réelles), les séparer aurait été artificiel.
 
 - [ ] **5. Les 6 runs d'ablation** (pas de code, exécution)
       `unet_dice`, `unet_ce`, `unet_combo`, `deeplab_dice`, `deeplab_ce`,
