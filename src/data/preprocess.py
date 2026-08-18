@@ -33,8 +33,12 @@ def main(config_path: str) -> None:
     with open(config_path) as f:
         cfg = yaml.safe_load(f)
 
-    raw_images_dir = cfg["data"]["images_dir"]
-    raw_masks_dir = cfg["data"]["masks_dir"]
+    # Source fixe : toujours data/raw/ (les images originales telles que
+    # téléchargées). Volontairement PAS lu depuis config["data"]["images_dir"],
+    # qui pointe vers data/processed/ — c'est la destination finale pour
+    # l'entraînement, pas la source du pré-traitement.
+    raw_images_dir = "data/raw/images"
+    raw_masks_dir = "data/raw/masks"
     image_size = cfg["data"]["image_size"]
 
     out_images_dir = "data/processed/images"
