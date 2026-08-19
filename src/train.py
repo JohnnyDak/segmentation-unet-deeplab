@@ -28,7 +28,16 @@ from src.metrics.metrics import SegmentationMetrics
 from src.models.deeplabv3 import DeepLabV3
 from src.models.unet import UNet
 
-MLFLOW_TRACKING_URI = "sqlite:///mlflow.db"
+# Chemins ABSOLUS vers Google Drive, volontairement — pas de chemin
+# relatif comme "sqlite:///mlflow.db". Un chemin relatif dépend du
+# dossier courant au moment de l'exécution : si le script est lancé par
+# erreur depuis /content (disque local éphémère de Colab) plutôt que
+# /content/drive/MyDrive/repo_clone (Drive, persistant), tout le suivi
+# MLflow serait perdu à la fin de la session sans aucun message d'erreur.
+# Avec un chemin absolu, ça écrit toujours au bon endroit sur Drive,
+# peu importe d'où le script est appelé.
+_REPO_ROOT = "/content/drive/MyDrive/repo_clone"
+MLFLOW_TRACKING_URI = f"sqlite:////{_REPO_ROOT.lstrip('/')}/mlflow.db"
 MLFLOW_EXPERIMENT_NAME = "segmentation-ablation"
 CLASS_NAMES = ["fond", "lesion"]
 
@@ -62,7 +71,7 @@ def get_or_create_experiment(name: str) -> str:
     experiment = mlflow.get_experiment_by_name(name)
     if experiment is not None:
         return experiment.experiment_id
-    return mlflow.create_experiment(name, artifact_location="file:./mlruns")
+    return mlflow.create_experiment(name, artifact_location=f"file:{_REPO_ROOT}/mlruns")
 
 
 def run_epoch(model, loader, loss_fn, metrics, device, optimizer=None) -> dict:
