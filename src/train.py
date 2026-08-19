@@ -121,7 +121,9 @@ def maybe_promote_to_production(client: MlflowClient, model_name: str, version: 
                   f"({current_prod.version}, {current_metric:.4f}) — pas de promotion.")
 
     if should_promote:
-        client.transition_model_version_stage(name=model_name, version=version, stage="Production")
+        client.transition_model_version_stage(
+            name=model_name, version=version, stage="Production", archive_existing_versions=True,
+        )
         print(f"✅ {model_name} v{version} promu en Production (mean_dice={metric_value:.4f}).")
 
 
